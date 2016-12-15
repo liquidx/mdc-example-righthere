@@ -16,6 +16,7 @@
 @property NSArray *places;
 @property MDCFlexibleHeaderViewController *headerViewController;
 @property UIImageView *imageView;
+@property UILabel *pizza;
 @end
 
 @implementation ViewController
@@ -53,6 +54,15 @@
   self.imageView.contentMode = UIViewContentModeScaleAspectFill;
   self.imageView.clipsToBounds = YES;
   [self.headerViewController.headerView addSubview:self.imageView];
+
+  CGSize pizzaSize = CGSizeMake(96, 96);
+  self.pizza = [[UILabel alloc] initWithFrame:CGRectMake(self.imageView.bounds.size.width / 2 - pizzaSize.width / 2,
+                                                         self.imageView.bounds.size.height / 2 - pizzaSize.height / 2,
+                                                         pizzaSize.width,
+                                                         pizzaSize.height)];
+  self.pizza.font = [UIFont systemFontOfSize:72];
+  self.pizza.text = @"🍕";
+  [self.headerViewController.headerView addSubview:self.pizza];
 
 
   self.service = [[MapService alloc] init];
