@@ -1,0 +1,8 @@
+target 'RightHere' do
+  pod 'MaterialComponents/Collections', :path => '../../material-components-ios'
+  pod 'MaterialComponents/Snackbar', :path => '../../material-components-ios'
+  pod 'MaterialComponents/FlexibleHeader', :path => '../../material-components-ios'
+
+  # For this demo.
+  pod 'MaterialComponents/Palettes', :path => '../../material-components-ios'
+end
