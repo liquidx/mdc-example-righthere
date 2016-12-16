@@ -61,6 +61,7 @@
                                                          pizzaSize.width,
                                                          pizzaSize.height)];
   self.pizza.font = [UIFont systemFontOfSize:72];
+  self.pizza.textAlignment = NSTextAlignmentCenter;
   self.pizza.text = @"🍕";
   [self.headerViewController.headerView addSubview:self.pizza];
 
