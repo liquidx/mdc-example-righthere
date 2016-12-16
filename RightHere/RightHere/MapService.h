@@ -12,6 +12,9 @@
 @interface MapService : NSObject
 
 @property (nonatomic, copy) void (^placesDidUpdate)(NSArray *places, NSError *error);
+@property (nonatomic, copy) void (^headingDidUpdate)(CLHeading *heading);
+@property (nonatomic, readonly) CLLocation *currentLocation;
+@property (nonatomic, readonly) CLHeading *currentHeading;
 
 - (void)fetchLocation;
 - (void)nearbyPlaces:(void (^)(NSArray *places, NSError *error))callback;

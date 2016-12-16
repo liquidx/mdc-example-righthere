@@ -15,6 +15,7 @@
 @property NSString *nearbySearchURL;
 @property CLLocationManager *locationManager;
 @property CLLocation *currentLocation;
+@property CLHeading *currentHeading;
 @property NSDate *lastUpdate;
 @end
 
@@ -40,6 +41,7 @@
 
   self.locationManager.distanceFilter = 100;
   [self.locationManager startUpdatingLocation];
+  [self.locationManager startUpdatingHeading];
 }
 
 
@@ -118,6 +120,13 @@
     [self nearbyPlaces:self.placesDidUpdate];
     [MDCSnackbarManager showMessage:[MDCSnackbarMessage messageWithText:debugMessage]];
     self.lastUpdate = [NSDate date];
+  }
+}
+
+- (void)locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading {
+  self.currentHeading = newHeading;
+  if (self.headingDidUpdate) {
+    self.headingDidUpdate(newHeading);
   }
 }
 

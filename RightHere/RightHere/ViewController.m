@@ -17,6 +17,8 @@
 @property MDCFlexibleHeaderViewController *headerViewController;
 @property UIImageView *imageView;
 @property UILabel *pizza;
+
+@property CLLocation *targetLocation;
 @end
 
 @implementation ViewController
@@ -70,11 +72,20 @@
   __weak ViewController *weakSelf = self;
   self.service.placesDidUpdate = ^(NSArray *places, NSError *error) {
     weakSelf.places = places;
+
     dispatch_async(dispatch_get_main_queue(), ^{
       [weakSelf.collectionView reloadData];
       [weakSelf.collectionView setNeedsDisplay];
+      [weakSelf updatePizzaOrientation:weakSelf.service.currentHeading];
     });
   };
+  self.service.headingDidUpdate = ^(CLHeading *heading) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [weakSelf updatePizzaOrientation:heading];
+    });
+
+  };
+
   [self.service fetchLocation];
 }
 
@@ -134,6 +145,10 @@
   NSString *lng = place[@"geometry"][@"location"][@"lng"];
   CLLocation *location = [[CLLocation alloc] initWithLatitude:[lat doubleValue]
                                                     longitude:[lng doubleValue]];
+  self.targetLocation = location;
+
+  [self updatePizzaOrientation:self.service.currentHeading];
+
   [self.service fetchMapAtLocation:location callback:^(UIImage *image, NSError *error) {
     dispatch_async(dispatch_get_main_queue(), ^{
       [self.headerViewController.headerView shiftHeaderOnScreenAnimated:YES];
@@ -141,6 +156,38 @@
       [self.imageView setNeedsDisplay];
     });
   }];
+}
+
+#pragma mark - Angle calculations
+
+double RadiansToDegrees(double radian) {
+  return radian / M_PI *  180;
+}
+
+double DegreesToRadians(double degrees) {
+  return degrees / 180 * M_PI;
+}
+
+- (void)updatePizzaOrientation:(CLHeading *)heading {
+  double pizzaOrientation = DegreesToRadians(205.0);
+
+  if (!heading || !self.targetLocation || !self.service.currentLocation) {
+    self.pizza.transform = CGAffineTransformMakeRotation(pizzaOrientation);
+    return;
+  }
+
+  double targetAngleRadians = [self radiansFrom:self.service.currentLocation to:self.targetLocation];
+  double orientationRadians = DegreesToRadians(heading.magneticHeading);
+
+  self.pizza.transform = CGAffineTransformMakeRotation(targetAngleRadians - orientationRadians - pizzaOrientation);
+}
+
+- (double)radiansFrom:(CLLocation *)oneLocation to:(CLLocation *)anotherLocation {
+  double lat1 = oneLocation.coordinate.latitude; double lng1 = oneLocation.coordinate.longitude;
+  double lat2 = anotherLocation.coordinate.latitude; double lng2 = anotherLocation.coordinate.longitude;
+
+  double angle = atan2(lat2 - lat1, lng2 - lng1);
+  return angle;
 }
 
 @end
