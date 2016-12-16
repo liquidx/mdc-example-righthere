@@ -37,6 +37,8 @@
   [self.locationManager requestWhenInUseAuthorization];
 
   [self.locationManager requestLocation];
+
+  self.locationManager.distanceFilter = 100;
   [self.locationManager startUpdatingLocation];
 }
 
